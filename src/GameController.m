@@ -3,6 +3,7 @@ classdef GameController < handle
     %   此处显示详细说明
     
     properties
+        server_address 
         room_id %valid id from 1 to 10
         packed = 0 % 3 players? yes 1 no 0     
         room_status % waiting(0) or playing(1)
@@ -68,7 +69,8 @@ classdef GameController < handle
         
         function startGame(self)
             self.room_status = 1;
-            suit = self.SUIT(randperm(length(self.SUIT)));
+            %suit = self.SUIT(randperm(length(self.SUIT)));
+            suit = self.SUIT;
             self.player_cards{1} = self.sortCards(suit(1:17));
             self.player_cards{2} = self.sortCards(suit(18:34));
             self.player_cards{3} = self.sortCards(suit(35:51));  
@@ -81,7 +83,28 @@ classdef GameController < handle
             self.bid_times = 0;
             self.bid_points = [0,0,0];
             self.player_identity = ["Farmer", "Farmer", "Farmer"];
+            
+
         end
+        
+        function updatePoints(self)
+            farmer = find(self.player_identity=="Farmer");
+            lord= find(self.player_identity=="Landlord");
+            k = (self.players==self.curr_player);
+            disp(farmer)
+            disp(lord)
+            disp(k)
+            if (strcmp(self.player_identity(k), "Farmer"))
+                 self.server.updateplayerPoints(self.players(farmer(1)), 100);
+                 self.server.updateplayerPoints(self.players(farmer(2)), 100);
+                 self.server.updateplayerPoints(self.players(lord),-100);
+            else
+                self.server.updateplayerPoints(self.players(farmer(1)), -100);
+                self.server.updateplayerPoints(self.players(farmer(2)), -100);
+                self.server.updateplayerPoints(self.players(lord),100);
+            end
+        end
+            
             
         %==========================================
         function ret = sortCards(self, suited_cards)
@@ -181,6 +204,8 @@ classdef GameController < handle
             k = find(this==1);
             if (isempty(self.player_cards{k}))
                 % notify game end 
+               
+               self.updatePoints();
                self.notify('Win');
                self.endGame();
                return;
@@ -274,7 +299,16 @@ classdef GameController < handle
             self.last_exit=name;
             self.notify('PlayerExit');
         end 
-
+        
+        function cleanPlayers(self)
+            self.players = ["No Player","No Player","No Player"];
+            self.player_status = ["No Ready","No Ready","No Ready"];
+            self.packed = 0;
+            self.player_cards = cell(1,3);
+            self.bid_times = 0;
+            self.bid_points = [0,0,0];
+            self.player_identity = ["Farmer", "Farmer", "Farmer"];
+        end
     end
 end
 
