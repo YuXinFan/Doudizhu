@@ -45,10 +45,9 @@ classdef Server < handle
         function ret = checkAccountExistance(self,name)
             %检查账户name是不是已经存在
             ret = true;
-            disp(self.accounts_);
-            whos('self.accounts_')
             if (self.accounts_.isKey(name) == 0)
                 ret = false;
+                
             end 
         end
         
@@ -60,6 +59,7 @@ classdef Server < handle
                 self.accounts_(name) = password;
                 self.points_(name) = 0;
             else
+                msgbox('Username already exist');
                 ret = false;
             end
         end
@@ -70,7 +70,11 @@ classdef Server < handle
             if (is_exist)
                 if (strcmp(self.accounts_(name), word))
                     ret = true;
+                else
+                    errordlg('Wrong password');
                 end
+            else
+                errordlg('Username not exist');
             end
         end
         

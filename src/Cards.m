@@ -111,20 +111,6 @@ classdef Cards
             end
         end
          
-    end
-    methods(Static)
-        
-         function func = returnFunc()
-             function ret = fff(x)
-             if (x < 0)
-                 ret = false;
-             else
-                 ret = true;
-             end
-         end
-            func = @(x) enumSoloChain(x);
-         end
-         
          
     end
 end
