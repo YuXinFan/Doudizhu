@@ -58,6 +58,7 @@ classdef Server < handle
             if (~is_exist)
                 self.accounts_(name) = password;
                 self.points_(name) = 0;
+                save('Server.mat', 'self'); 
             else
                 msgbox('Username already exist');
                 ret = false;
